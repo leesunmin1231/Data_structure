@@ -56,7 +56,7 @@ def draw_wall(line):
             print("| ", end ="")
         else:
             print(line[i], end="")
-    if (line[-1].isdigit() or line[-1]== '-'):
+    if (line[-1].isdigit() or line[-1]== '-' or line[-1]=='b'):
         print("+")
     else:
         print("|")
@@ -70,7 +70,9 @@ def draw_road(line, width):
             print(" ", end="")
     print("|")
 
-def draw_maze(maze, width):
+def draw_maze(maze, col, row):
+    width = col*2+1
+    print("{} {}".format(col,row))
     draw_updown(maze, 0, width)
     row = 0
     for line in maze:
@@ -81,13 +83,11 @@ def draw_maze(maze, width):
         row+=1
     draw_updown(maze, -1, width)
 
-f = open("maze2.txt", 'r')
+f = open("maze1.txt", 'r')
 line = f.readline()
 nums = line.split()
-count=0
 row=0
 maze=[]
-print("{} {}".format(nums[0],nums[1]))
 line = f.readline()
 while True:
     line = f.readline()
@@ -98,8 +98,6 @@ while True:
     else:
         data_list = get_road(line)
     maze.append(data_list)
-    count+=len(data_list)
     row+=1
 f.close()
-draw_maze(maze,int(nums[0])*2+1)
-print(count)
+draw_maze(maze,int(nums[0]), int(nums[1]))
