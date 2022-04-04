@@ -74,8 +74,7 @@ data1 = input("수식 1을 입력하세요 : ").split(' ')
 data2 = input("수식 2을 입력하세요 : ").split(' ')
 data1 = change_to_int(data1)
 data2 = change_to_int(data2)
-# data1 = [3,3,6,1,3,0]
-# data2 = [7,2,5,1,1,0]
+
 data3 = add_func(data1, data2)
 data4 = mul_func(data1, data2)
 print("수식 1 + 2 는 ", end = "")
