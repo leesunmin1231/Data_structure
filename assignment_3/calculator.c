@@ -1,7 +1,7 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define _CRT_SECURE_NO_WARNINGS
 #define	MAX_STACK_SIZE 100
 #define ARRAY_SIZE 100
 #define True 1
