@@ -135,9 +135,6 @@ void three_rail(char *train_num)
 	char recent_out = '0';
 	while (j < stack_count)
 	{
-		rail[j] = (Stack *)malloc(sizeof(Stack));
-		if (rail[j] == 0)
-			return ;
 		rail[j] = Create();
 		j++;
 	}
@@ -155,35 +152,18 @@ void three_rail(char *train_num)
 			out[j++] = train_num[i];
 			recent_out++;
 			i++;
-			if (!isEmpty(rail[0]) && (recent_out + 1) == get_top(rail[0]))
+			for (int k = 0; k < stack_count; k++)
 			{
-				count++;
-				printf("%s : POP(%d)\n",print_count(count), 1);
-				count++;
-				tmp = Pop(rail[0]);
-				printf("%s : OUT(%c)\n",print_count(count), tmp);
-				out[j++] = tmp;
-				recent_out++;
-			}
-			else if (!isEmpty(rail[1]) && (recent_out + 1) == get_top(rail[1]))
-			{
-				count++;
-				printf("%s : POP(%d)\n",print_count(count), 2);
-				count++;
-				tmp = Pop(rail[1]);
-				printf("%s : OUT(%c)\n",print_count(count), tmp);
-				out[j++] = tmp;
-				recent_out++;
-			}
-			else if (!isEmpty(rail[2]) && (recent_out + 1) == get_top(rail[2]))
-			{
-				count++;
-				printf("%s : POP(%d)\n",print_count(count), 3);
-				count++;
-				tmp = Pop(rail[2]);
-				printf("%s : OUT(%c)\n",print_count(count), tmp);
-				out[j++] = tmp;
-				recent_out++;
+				if (!isEmpty(rail[k]) && (recent_out + 1) == get_top(rail[k]))
+				{
+					count++;
+					printf("%s : POP(%d)\n",print_count(count), k+1);
+					count++;
+					tmp = Pop(rail[k]);
+					printf("%s : OUT(%c)\n",print_count(count), tmp);
+					out[j++] = tmp;
+					recent_out++;
+				}
 			}
 			continue;
 		}
@@ -195,35 +175,18 @@ void three_rail(char *train_num)
 			put_num(rail[2], rail[0], train_num[i], &count, 3);
 		i++;
 	}
-	while (!isEmpty(rail[0]))
+	for (i = 0; i < stack_count; i++)
 	{
-		count++;
-		printf("%s : POP(%d)\n",print_count(count), 1);
-		count++;
-		tmp = Pop(rail[0]);
-		printf("%s : OUT(%c)\n",print_count(count), tmp);
-		out[j++] = tmp;
-		recent_out++;
-	}
-	while (!isEmpty(rail[1]))
-	{
-		count++;
-		printf("%s : POP(%d)\n",print_count(count), 2);
-		count++;
-		tmp = Pop(rail[1]);
-		printf("%s : OUT(%c)\n",print_count(count), tmp);
-		out[j++] = tmp;
-		recent_out++;
-	}
-	while (!isEmpty(rail[2]))
-	{
-		count++;
-		printf("%s : POP(%d)\n",print_count(count), 2);
-		count++;
-		tmp = Pop(rail[2]);
-		printf("%s : OUT(%c)\n",print_count(count), tmp);
-		out[j++] = tmp;
-		recent_out++;
+		while (!isEmpty(rail[i]))
+		{
+			count++;
+			printf("%s : POP(%d)\n",print_count(count), i+1);
+			count++;
+			tmp = Pop(rail[i]);
+			printf("%s : OUT(%c)\n",print_count(count), tmp);
+			out[j++] = tmp;
+			recent_out++;
+		}
 	}
 	out[j] = '\0';
 	for (i = 0; i < stack_count; i++)
@@ -246,9 +209,6 @@ void two_rail(char *train_num)
 	char recent_out = '0';
 	while (j < stack_count)
 	{
-		rail[j] = (Stack *)malloc(sizeof(Stack));
-		if (rail[j] == 0)
-			return ;
 		rail[j] = Create();
 		j++;
 	}
@@ -266,25 +226,18 @@ void two_rail(char *train_num)
 			out[j++] = train_num[i];
 			recent_out++;
 			i++;
-			if (!isEmpty(rail[0]) && (recent_out + 1) == get_top(rail[0]))
+			for (int k = 0; k < stack_count; k++)
 			{
-				count++;
-				printf("%s : POP(%d)\n",print_count(count), 1);
-				count++;
-				tmp = Pop(rail[0]);
-				printf("%s : OUT(%c)\n",print_count(count), tmp);
-				out[j++] = tmp;
-				recent_out++;
-			}
-			else if (!isEmpty(rail[1]) && (recent_out + 1) == get_top(rail[1]))
-			{
-				count++;
-				printf("%s : POP(%d)\n",print_count(count), 2);
-				count++;
-				tmp = Pop(rail[1]);
-				printf("%s : OUT(%c)\n",print_count(count), tmp);
-				out[j++] = tmp;
-				recent_out++;
+				if (!isEmpty(rail[k]) && (recent_out + 1) == get_top(rail[k]))
+				{
+					count++;
+					printf("%s : POP(%d)\n",print_count(count), k+1);
+					count++;
+					tmp = Pop(rail[k]);
+					printf("%s : OUT(%c)\n",print_count(count), tmp);
+					out[j++] = tmp;
+					recent_out++;
+				}
 			}
 			continue;
 		}
@@ -294,25 +247,18 @@ void two_rail(char *train_num)
 			put_num(rail[1], rail[0], train_num[i], &count, 2);
 		i++;
 	}
-	while (!isEmpty(rail[0]))
+	for (i = 0; i < stack_count; i++)
 	{
-		count++;
-		printf("%s : POP(%d)\n",print_count(count), 1);
-		count++;
-		tmp = Pop(rail[0]);
-		printf("%s : OUT(%c)\n",print_count(count), tmp);
-		out[j++] = tmp;
-		recent_out++;
-	}
-	while (!isEmpty(rail[1]))
-	{	
-		count++;
-		printf("%s : POP(%d)\n",print_count(count), 2);
-		count++;
-		tmp = Pop(rail[1]);
-		printf("%s : OUT(%c)\n",print_count(count), tmp);
-		out[j++] = tmp;
-		recent_out++;
+		while (!isEmpty(rail[i]))
+		{
+			count++;
+			printf("%s : POP(%d)\n",print_count(count), i+1);
+			count++;
+			tmp = Pop(rail[i]);
+			printf("%s : OUT(%c)\n",print_count(count), tmp);
+			out[j++] = tmp;
+			recent_out++;
+		}
 	}
 	out[j] = '\0';
 
