@@ -1,6 +1,7 @@
+#define _CRT_SECURE_NO_WARNINGS 
 #include <string.h>
 
-#define ARR_SIZE 5000
+#define ARR_SIZE 20000
 
 void adjust(char arr[ARR_SIZE][12], int root, int n)
 {

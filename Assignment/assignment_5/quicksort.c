@@ -1,7 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#define ARR_SIZE 5000
+#define ARR_SIZE 20000
 
 int get_pivot(char arr[ARR_SIZE][12], int start, int end)
 {

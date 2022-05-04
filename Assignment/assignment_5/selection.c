@@ -1,7 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 
-#define ARR_SIZE 5000
+#define ARR_SIZE 20000
 
 void selection_sort(char arr[ARR_SIZE][12], int size)
 {

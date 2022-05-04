@@ -1,10 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS 
 #include <time.h>
 #include <string.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <math.h>
 
-#define ARR_SIZE 5000
+#define ARR_SIZE 20000
 void quicksort(char arr[ARR_SIZE][12], int size);
 void selection_sort(char arr[ARR_SIZE][12], int size);
 void heap_sort(char arr[ARR_SIZE][12], int size);
@@ -25,20 +26,37 @@ void print_array(char name[ARR_SIZE][12])
 
 void random_id(char id[ARR_SIZE][12], int size)
 {
-	int i,j;
+	int i,j,tmp;
+	int count[4] = {0,0,0,0};
 	int arr[ARR_SIZE];
 	srand(time(NULL));
 	for (i = 0; i < size; i++)
 	{
-		arr[i] = rand()% 40000 + 20190000;
+		tmp = rand()%4;
+		if (count[tmp] < ARR_SIZE/4)
+		{
+			arr[i] = rand()% 10000 + (tmp + 1)*10000 + 20180000;
+			count[tmp]++;
+		}
+		else if (i == size)
+			break;
+		else
+		{
+			i--;
+			continue;
+		}
 		for (j = 0; j < i; j++)
 			if (arr[i] == arr[j])
+			{
+				count[tmp]--;
 				i--;
+			}
 	}
 	for (i = 0; i < size; i++)
 	{
 		sprintf(id[i], "%d", arr[i]);
 	}
+
 }
 
 void random_name(char arr[ARR_SIZE][12], int size)
@@ -80,7 +98,7 @@ double check_qsort_time(char arr[ARR_SIZE][12], char origin[ARR_SIZE][12], void 
 	fp(arr, ARR_SIZE, sizeof(char[12]), (void *)strcmp);
 	end = clock();
 	double runtime = (double)(end - start);
-//	print_array(arr);
+	print_array(arr);
 	printf("Execution time : %.0lf ms \n", runtime);
 	init_array(arr, origin, ARR_SIZE);
 	return runtime;
@@ -93,7 +111,7 @@ double check_time(char arr[ARR_SIZE][12], char origin[ARR_SIZE][12], void fp (ch
 	fp(arr, ARR_SIZE);
 	end = clock();
 	double runtime = (double)(end - start);
-//	print_array(arr);
+	print_array(arr);
 	printf("Execution time : %.0lf ms \n", runtime);
 	init_array(arr, origin, ARR_SIZE);
 	return runtime;
@@ -113,9 +131,9 @@ int main()
 	random_id(id, ARR_SIZE);
 	random_name(name, ARR_SIZE);
 	random_number(number, ARR_SIZE);
-	// print_number(id, ARR_SIZE);
-	// print_str(name);
-	// print_str(number);
+	print_array(id);
+	print_array(name);
+	print_array(number);
 	init_array(id_origin, id, ARR_SIZE);
 	init_array(name_origin, name, ARR_SIZE);
 	init_array(number_origin, number, ARR_SIZE);
@@ -162,5 +180,6 @@ int main()
 	printf("quicksort id array:     %.0lf, selection sort id array:     %.0lf, heap sort id array:     %.0lf\n", runtime_arr[3], runtime_arr[6], runtime_arr[9]);
 	printf("quicksort name array:   %.0lf, selection sort name array:   %.0lf, heap sort name array:   %.0lf\n", runtime_arr[4], runtime_arr[7], runtime_arr[10]);
 	printf("quicksort number array: %.0lf, selection sort number array: %.0lf, heap sort number array: %.0lf\n", runtime_arr[5], runtime_arr[8], runtime_arr[11]);
+
 	return (0);
 }
