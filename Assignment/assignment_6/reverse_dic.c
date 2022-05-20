@@ -40,36 +40,11 @@ int is_tail(char alpha)
 	return 0;
 }
 
-void Append(ListNode **head, ListNode **tail, char word[ARR_SIZE*2])
+void insert_tail(ListNode **head, ListNode **tail, ListNode *p)
 {
-	char eng[ARR_SIZE];
-	char kor[ARR_SIZE];
 	char tmp_p[ARR_SIZE];
 	char tmp_cur[ARR_SIZE];
-	int i = 0;
-	int j = 0;
-	while (word[i] != ':')
-		eng[j++] = word[i++];
-	eng[--j] = '\0';
-	j = 0;
-	i++;
-	while (word[i] != '\n' && word[i])
-		kor[j++] = word[++i];
-	kor[--j] = '\0';
-
-	ListNode *p = (ListNode *)malloc(sizeof(ListNode));
-	strcpy(p->eng,eng);
-	strcpy(p->kor,kor);
-
-	if (*head == NULL)
-	{
-		p->next = NULL;
-		p->prev = NULL;
-		*head = p;
-		*tail = p;
-		return;
-	}
-	ListNode *cur = *head;
+	ListNode *cur = *tail;
 	while (cur)
 	{
 		strcpy(tmp_p, p->eng);
@@ -100,6 +75,70 @@ void Append(ListNode **head, ListNode **tail, char word[ARR_SIZE*2])
 			}
 		}
 
+		if (cur->prev == NULL || !is_tail(cur->prev->eng[0]))
+		{
+			if (strcmp(tmp_p, tmp_cur) < 0)
+			{
+				p->next = cur;
+				p->prev = cur->prev;
+				cur->prev = p;
+				if(cur->prev == NULL)
+					*head = p;
+				return;
+			}
+		}
+		if (strcmp(tmp_p, tmp_cur) < 0)
+		{
+			cur = cur->prev;
+			continue;
+		}
+		else
+		{
+			cur->next->prev = p;
+			p->prev = cur;
+			p->next = cur->next;
+			cur->next = p;
+			return;
+		}
+	}
+}
+
+void insert_front(ListNode **head, ListNode **tail, ListNode *p)
+{
+	char tmp_p[ARR_SIZE];
+	char tmp_cur[ARR_SIZE];
+	ListNode *cur = *head;
+	while (cur)
+	{
+		strcpy(tmp_p, p->eng);
+		strcpy(tmp_cur, cur->eng);
+		int count = 0;
+		while (tmp_p[count]) {
+        		if (isupper(tmp_p[count])){
+            			tmp_p[count] = tolower(tmp_p[count]);
+        		}
+			count++;
+		}
+		count = 0;
+		while (tmp_cur[count]) {
+        		if (isupper(tmp_cur[count])){
+            			tmp_cur[count] = tolower(tmp_cur[count]);
+        		}
+			count++;
+		}
+		if (cur->next == NULL || is_tail(cur->next->eng[0]))
+		{
+			if (strcmp(tmp_p, tmp_cur) > 0)
+			{
+				p->next = cur->next;
+				p->prev = cur;
+				cur->next = p;
+				if (cur->next == NULL)
+					*tail = p;
+				return;
+			}
+		}
+
 		if (cur->prev == NULL)
 		{
 			if (strcmp(tmp_p, tmp_cur) < 0)
@@ -125,6 +164,41 @@ void Append(ListNode **head, ListNode **tail, char word[ARR_SIZE*2])
 			return;
 		}
 	}
+}
+
+void Append(ListNode **head, ListNode **tail, char word[ARR_SIZE*2])
+{
+	char eng[ARR_SIZE];
+	char kor[ARR_SIZE];
+	char tmp_p[ARR_SIZE];
+	char tmp_cur[ARR_SIZE];
+	int i = 0;
+	int j = 0;
+	while (word[i] != ':')
+		eng[j++] = word[i++];
+	eng[--j] = '\0';
+	j = 0;
+	i++;
+	while (word[i] != '\n' && word[i])
+		kor[j++] = word[++i];
+	kor[--j] = '\0';
+
+	ListNode *p = (ListNode *)malloc(sizeof(ListNode));
+	strcpy(p->eng,eng);
+	strcpy(p->kor,kor);
+
+	if (*head == NULL)
+	{
+		p->next = NULL;
+		p->prev = NULL;
+		*head = p;
+		*tail = p;
+		return;
+	}
+	if (is_tail(p->eng[0]))
+		insert_tail(head, tail, p);
+	else
+		insert_front(head, tail, p);
 }
 
 void Traverse(ListNode **list, void (*fp)(ListNode *))
@@ -206,6 +280,7 @@ int main(void)
 	double search_time[ARR_SIZE];
 	FILE *fp = fopen("randdict_utf8.TXT", "r");
 	int i = 0;
+	start = clock();
 	while (!feof(fp))
 	{
 		fgets(buffer, sizeof(buffer), fp);
@@ -213,8 +288,10 @@ int main(void)
 		Append(&head, &tail, buffer);
 		i++;
 	}
+	end = clock();
+	double insert_time = (double)(end - start);
 	fclose(fp);
-	print_list(head);
+	//print_list(head);
 	char word[ARR_SIZE];
 	int j = 0;
 	while (1)
@@ -229,8 +306,9 @@ int main(void)
 		double runtime = (double)(end - start);
 		search_time[j++] = runtime;
 	}
-	for (int k = 0; k < j; k++)
-		printf("search time: %.0lf ms\n", search_time[k]);
+	//for (int k = 0; k < j; k++)
+	//	printf("search time: %.0lf ms\n", search_time[k]);
+	//printf("insert time: %.0lf ms\n", insert_time);
 	Traverse(&head, free_node);
 	return 0;
 }

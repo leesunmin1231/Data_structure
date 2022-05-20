@@ -10,13 +10,14 @@ typedef struct ListNode{
 	char eng[ARR_SIZE];
 	char kor[ARR_SIZE];
 	struct ListNode *next;
+	struct ListNode *prev;
 } ListNode;
 
-void print_data(ListNode *p)
+void print_list(ListNode *head)
 {
-	printf("%s : %s\n",p->eng, p->kor);
-	if (p->next == NULL)
-		printf("NULL\n");
+	for (ListNode *p = head; p != NULL; p = p->next)
+		printf("%s : %s\n",p->eng, p->kor);
+	printf("NULL\n");
 }
 
 void free_node(ListNode *p)
@@ -32,12 +33,18 @@ void error(char *message)
 	exit(1);
 }
 
-ListNode* Append(ListNode *list, char word[ARR_SIZE*2])
+int is_tail(char alpha)
+{
+	if ((alpha > 'm' && alpha <= 'z') || (alpha > 'M' && alpha <= 'Z'))
+		return 1;
+	return 0;
+}
+
+void Append(ListNode **head, ListNode **tail, char word[ARR_SIZE*2])
 {
 	char eng[ARR_SIZE];
 	char kor[ARR_SIZE];
 	char tmp_p[ARR_SIZE];
-	char tmp_prev[ARR_SIZE];
 	char tmp_cur[ARR_SIZE];
 	int i = 0;
 	int j = 0;
@@ -49,24 +56,24 @@ ListNode* Append(ListNode *list, char word[ARR_SIZE*2])
 	while (word[i] != '\n' && word[i])
 		kor[j++] = word[++i];
 	kor[--j] = '\0';
-	if (list == NULL)
-	{
-		list = (ListNode *)malloc(sizeof(ListNode));
-		strcpy(list->eng,eng);
-		strcpy(list->kor,kor);
-		list->next = NULL;
-		return list;
-	}
+
 	ListNode *p = (ListNode *)malloc(sizeof(ListNode));
 	strcpy(p->eng,eng);
 	strcpy(p->kor,kor);
 
-	ListNode *prev = list;
-	ListNode *cur = list->next;
-	while (prev)
+	if (*head == NULL)
+	{
+		p->next = NULL;
+		p->prev = NULL;
+		*head = p;
+		*tail = p;
+		return;
+	}
+	ListNode *cur = *head;
+	while (cur)
 	{
 		strcpy(tmp_p, p->eng);
-		strcpy(tmp_prev, prev->eng);
+		strcpy(tmp_cur, cur->eng);
 		int count = 0;
 		while (tmp_p[count]) {
         		if (isupper(tmp_p[count])){
@@ -75,86 +82,100 @@ ListNode* Append(ListNode *list, char word[ARR_SIZE*2])
 			count++;
 		}
 		count = 0;
-		while (tmp_prev[count]) {
-        		if (isupper(tmp_prev[count])){
-            			tmp_prev[count] = tolower(tmp_prev[count]);
-        		}
-			count++;
-		}
-		if (cur == NULL)
-		{
-			if (strcmp(tmp_p, tmp_prev) > 0)
-			{
-				prev->next = p;
-				p->next = cur;
-				break;
-			}
-			else
-			{
-				p->next = prev;
-				list = p;
-				break;
-			}
-		}
-		strcpy(tmp_cur, cur->eng);
-		count = 0;
 		while (tmp_cur[count]) {
         		if (isupper(tmp_cur[count])){
             			tmp_cur[count] = tolower(tmp_cur[count]);
         		}
 			count++;
 		}
-		if (strcmp(tmp_p, tmp_prev) > 0 && strcmp(tmp_p, tmp_cur) > 0)
+		if (cur->next == NULL)
 		{
-			prev = prev->next;
+			if (strcmp(tmp_p, tmp_cur) > 0)
+			{
+				cur->next = p;
+				p->next = NULL;
+				p->prev = cur;
+				*tail = p;
+				return;
+			}
+		}
+
+		if (cur->prev == NULL)
+		{
+			if (strcmp(tmp_p, tmp_cur) < 0)
+			{
+				p->next = cur;
+				p->prev = NULL;
+				cur->prev = p;
+				*head = p;
+				return;
+			}
+		}
+		if (strcmp(tmp_p, tmp_cur) > 0)
+		{
 			cur = cur->next;
 			continue;
 		}
-		else if (strcmp(tmp_p, tmp_prev) > 0)
-		{
-			prev->next = p;
-			p->next = cur;
-			break;
-		}
 		else
 		{
-			p->next = prev;
-			list = p;
-			break;
+			cur->prev->next = p;
+			p->prev = cur->prev;
+			p->next = cur;
+			cur->prev = p;
+			return;
 		}
 	}
-	return list;
 }
 
-void Traverse(ListNode *list, void (*fp)(ListNode *))
+void Traverse(ListNode **list, void (*fp)(ListNode *))
 {
-	if (list == NULL)
+	if (*list == NULL)
 	{
 		printf("List is Empty.\n");
 		return ;
 	}
-	ListNode *tmp = list;
+	ListNode *tmp = *list;
+	ListNode *next;
 	while (tmp)
 	{
-		tmp = list->next;
-		fp(list);
-		list = tmp;
+		next = tmp->next;
+		fp(tmp);
+		tmp = next;
 	}
 }
 
-ListNode *Search_word(ListNode *dic, char word[ARR_SIZE])
+void Search_word(ListNode **head, ListNode **tail, char word[ARR_SIZE], int count)
 {
-	ListNode *head = dic;
-	int count = 0;
-	while (dic)
+	if (is_tail(word[0]))
 	{
-		if (strcmp(dic->eng, word) == 0)
+		ListNode *dic = *tail;
+		while (dic)
 		{
-			printf("%s\n",dic->kor);
-			return head;
+			if (!is_tail(dic->eng[0]))
+				break;
+			if (strcmp(dic->eng, word) == 0)
+			{
+				printf("%s\n",dic->kor);
+				return;
+			}
+			dic = dic->prev;
 		}
-		dic = dic->next;
-		count++;
+	}
+	else
+	{
+		ListNode *dic = *head;
+		while (dic)
+		{
+			if (is_tail(dic->eng[0]))
+				break;
+			if (strcmp(dic->eng, word) == 0)
+			{
+				printf("%s\n",dic->kor);
+				return;
+			}
+			dic = dic->next;
+
+		}
 	}
 	printf("찾을 수 없는 단어입니다. 뜻을 추가하세요. (추가하지 않으려면 '0' 을 입력하세요.)\n");
 	char mean[ARR_SIZE];
@@ -164,21 +185,21 @@ ListNode *Search_word(ListNode *dic, char word[ARR_SIZE])
 	if (strcmp(mean, "0") == 0)
 	{
 		printf("추가하지 않습니다.\n");
-		return head;
+		return;
 	}
 	strcpy(total,word);
 	strcat(total, " : ");
 	strcat(total,mean);
-	head = Append(head, total);
+	Append(head, tail, total);
 	count++;
 	printf("%s %s 가 추가되었습니다.(총 %d개 단어)\n",word,mean, count);
-	return head;
+	return;
 }
-
 
 int main(void)
 {
 	ListNode *head = NULL;
+	ListNode *tail = NULL;
 	char buffer[ARR_SIZE];
 	clock_t start, end;
 	double search_time[ARR_SIZE];
@@ -189,12 +210,13 @@ int main(void)
 	{
 		fgets(buffer, sizeof(buffer), fp);
 		if (feof(fp)) break;
-		head = Append(head, buffer);
+		Append(&head, &tail, buffer);
+		i++;
 	}
 	end = clock();
 	double insert_time = (double)(end - start);
 	fclose(fp);
-	//Traverse(head, print_data);
+	print_list(head);
 	char word[ARR_SIZE];
 	int j = 0;
 	while (1)
@@ -204,14 +226,14 @@ int main(void)
 		if (strcmp(word,"0") == 0)
 			break;
 		start = clock();
-		head = Search_word(head, word);
+		Search_word(&head, &tail, word, i);
 		end = clock();
 		double runtime = (double)(end - start);
 		search_time[j++] = runtime;
 	}
-	//for (int k = 0; k < j; k++)
-	//	printf("search time: %.0lf ms\n", search_time[k]);
-	//printf("insert time: %.0lf ms\n", insert_time);
-	Traverse(head, free_node);
+	for (int k = 0; k < j; k++)
+		printf("search time: %.0lf ms\n", search_time[k]);
+	printf("insert time: %.0lf ms\n", insert_time);
+	Traverse(&head, free_node);
 	return 0;
 }
