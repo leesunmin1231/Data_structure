@@ -19,6 +19,12 @@ Node *Create_node(char word[ARR_SIZE]) {
 		return 0;
 	int i = 0;
 	int j = 0;
+	for (i = 0; i < ARR_SIZE; i++)
+	{
+		node->eng[i] = '\0';
+		node->kor[i] = '\0';
+	}
+	i = 0;
 	while (word[i] != ':')
 		node->eng[j++] = word[i++];
 	node->eng[--j] = '\0';
@@ -69,6 +75,7 @@ void Inorder(Node *tree) {
 
 Node *Search_word(Node *tree, char eng[ARR_SIZE], int *count)
 {
+	char tmp[ARR_SIZE] = "(레벨";
 	(*count)++;
 	if (tree == NULL)
 	{
@@ -78,9 +85,7 @@ Node *Search_word(Node *tree, char eng[ARR_SIZE], int *count)
 	if (strcmp(eng, tree->eng) == 0)
 	{
 		int i = 0;
-		while (tree->kor[i])
-			printf("%c",tree->kor[i++]);
-		printf("\n (레벨 %d)\n",(*count));
+		printf("(레벨 : %d) %s\n", (*count), tree->kor);
 		return tree;
 	}
 	if (strcmp(eng, tree->eng) < 0)
@@ -141,8 +146,8 @@ int main(void)
 	end = clock();
 	double insert_time = (double)(end - start);
 	fclose(fp);
-   	//Inorder(tree);
-	//printf("\n");
+   	Inorder(tree);
+	printf("\n");
 	printf("사전 파일을 모두 읽었습니다. %d개의 단어가 있습니다.\n",i);
 	printf("A 트리의 전체 높이는 %d 입니다. A트리의 노드 수는 %d개 입니다.\n", get_height(tree), i);
 	char word[ARR_SIZE];
