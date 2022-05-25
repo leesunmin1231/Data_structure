@@ -16,7 +16,7 @@ typedef struct ListNode{
 void print_list(ListNode *head)
 {
 	for (ListNode *p = head; p != NULL; p = p->next)
-		printf("%s : %s\n",p->eng, p->kor);
+		printf("%s : %s",p->eng, p->kor);
 	printf("NULL\n");
 }
 
@@ -291,7 +291,7 @@ int main(void)
 	end = clock();
 	double insert_time = (double)(end - start);
 	fclose(fp);
-	//print_list(head);
+	print_list(head);
 	char word[ARR_SIZE];
 	int j = 0;
 	while (1)

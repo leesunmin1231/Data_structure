@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
-#define ARR_SIZE 200
+#define ARR_SIZE 500
 
 typedef struct _node{
 	char eng[ARR_SIZE];
@@ -26,9 +27,9 @@ Node *Create_node(char word[ARR_SIZE]) {
 	while (word[i] != '\n' && word[i])
 		node->kor[j++] = word[++i];
 	node->kor[--j] = '\0';
-    node->right = NULL;
-    node->left = NULL;
-    return node;
+   	node->right = NULL;
+    	node->left = NULL;
+    	return node;
 }
 
 void Insert(Node **tree, char word[ARR_SIZE])
@@ -66,14 +67,26 @@ void Inorder(Node *tree) {
     }
 }
 
-Node *Search_word(Node *tree, char eng[ARR_SIZE])
+Node *Search_word(Node *tree, char eng[ARR_SIZE], int *count)
 {
-	if (tree == NULL || strcmp(eng, tree->eng) == 0)
+	(*count)++;
+	if (tree == NULL)
+	{
+		printf("찾는 단어가 없습니다.\n");
+		return 0;
+	}
+	if (strcmp(eng, tree->eng) == 0)
+	{
+		int i = 0;
+		while (tree->kor[i])
+			printf("%c",tree->kor[i++]);
+		printf("\n (레벨 %d)\n",(*count));
 		return tree;
+	}
 	if (strcmp(eng, tree->eng) < 0)
-		return Search(tree->left, eng);
+		return Search_word(tree->left, eng, count);
 	else
-		return Search(tree->right, eng);
+		return Search_word(tree->right, eng, count);
 }
 
 void free_tree(Node *tree)
@@ -87,14 +100,36 @@ void free_tree(Node *tree)
 	}
 }
 
+int get_height(Node *tree)
+{
+	int height = 0;
+	if (tree)
+	{
+		if (tree->left == NULL && tree->right == NULL)
+			height = 1;
+		else
+		{
+			int le = get_height(tree->left);
+			int ri = get_height(tree->right);
+			if (le >= ri)
+				height = le + 1;
+			else
+				height = ri + 1;
+		}
+	}
+	return height;
+}
+
 int main(void)
 {
-    Node *tree = NULL;
+	Node *tree = NULL;
 	char buffer[ARR_SIZE];
 	clock_t start, end;
 	double search_time[ARR_SIZE];
 	FILE *fp = fopen("randdict_utf8.TXT", "r");
 	int i = 0;
+	while (i < ARR_SIZE)
+		buffer[i++] = '\0';
 	start = clock();
 	while (!feof(fp))
 	{
@@ -106,25 +141,27 @@ int main(void)
 	end = clock();
 	double insert_time = (double)(end - start);
 	fclose(fp);
-   	Inorder(tree);
-	printf("\n");
+   	//Inorder(tree);
+	//printf("\n");
 	printf("사전 파일을 모두 읽었습니다. %d개의 단어가 있습니다.\n",i);
+	printf("A 트리의 전체 높이는 %d 입니다. A트리의 노드 수는 %d개 입니다.\n", get_height(tree), i);
 	char word[ARR_SIZE];
 	int j = 0;
 	while (1)
 	{
-		printf(">> ");
+		int level = 0;
+		printf("단어를 입력하세요 ");
 		scanf("%s",word);
 		if (strcmp(word,"0") == 0)
 			break;
 		start = clock();
-		Search_word(tree, word);
+		Search_word(tree, word, &level);
 		end = clock();
 		double runtime = (double)(end - start);
 		search_time[j++] = runtime;
 	}
-	//for (int k = 0; k < j; k++)
-	//	printf("search time: %.0lf ms\n", search_time[k]);
-	//printf("insert time: %.0lf ms\n", insert_time);
+	for (int k = 0; k < j; k++)
+		printf("search time: %.0lf ms\n", search_time[k]);
+	printf("insert time: %.0lf ms\n", insert_time);
 	free_tree(tree);
 }
