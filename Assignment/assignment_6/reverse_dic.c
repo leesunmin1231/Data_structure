@@ -16,7 +16,7 @@ typedef struct ListNode{
 void print_list(ListNode *head)
 {
 	for (ListNode *p = head; p != NULL; p = p->next)
-		printf("%s : %s",p->eng, p->kor);
+		printf("%s : %s\n",p->eng, p->kor);
 	printf("NULL\n");
 }
 
